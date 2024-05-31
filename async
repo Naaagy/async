@@ -1,0 +1,97 @@
+const baseUrl = "https://vvri.pythonanywhere.com/api";
+
+async function getStudents(courseId) {
+    const url = `${baseUrl}/courses/${courseId}/students`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.log("Hiba történt: " + error);
+    }
+}
+
+async function addStudent(courseId, studentData) {
+    const url = `${baseUrl}/courses/${courseId}/students`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(studentData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.log("Hiba történt: " + error);
+    }
+}
+
+async function editStudent(courseId, studentId, newData) {
+    const url = `${baseUrl}/courses/${courseId}/students/${studentId}`;
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newData),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.log("Hiba történt: " + error);
+    }
+}
+
+async function deleteStudent(courseId, studentId) {
+    const url = `${baseUrl}/courses/${courseId}/students/${studentId}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.log("Hiba történt: " + error);
+    }
+}
+
+(async () => {
+    const courseId = 'kurzus_id'; 
+    const studentData = {
+        name: 'Diák neve',
+        age: 18,
+    };
+
+    try {
+        const addedStudent = await addStudent(courseId, studentData);
+        console.log("Hozzáadott diák:", addedStudent);
+
+        const students = await getStudents(courseId);
+        console.log("Diákok:", students);
+
+        const studentId = 'diák_id'; 
+        const newData = {
+            name: 'Módosított név',
+            age: 20,
+        };
+
+        const editedStudent = await editStudent(courseId, studentId, newData);
+        console.log("Szerkesztett diák:", editedStudent);
+
+        const deletedStudent = await deleteStudent(courseId, studentId);
+        console.log("Törölt diák:", deletedStudent);
+    } catch (error) {
+        console.log("Hiba történt az IIFE-ben: " + error);
+    }
+})();
